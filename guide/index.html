@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>N.O.T.E. — Note Orchestration & Task Execution</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --black: #0f0e0d;
+  --white: #ffffff;
+  --off-white: #f7f5f2;
+  --border: #e5e0d9;
+  --text: #1c1a18;
+  --muted: #6b6560;
+  --light-muted: #9e9890;
+
+  --amber: #b45309;
+  --amber-bg: #fffbeb;
+  --amber-border: #fde68a;
+  --blue: #2563eb;
+  --blue-bg: #eff6ff;
+  --blue-border: #bfdbfe;
+  --green: #059669;
+  --green-bg: #f0fdf4;
+  --green-border: #a7f3d0;
+  --purple: #7c3aed;
+  --purple-bg: #f5f3ff;
+  --purple-border: #ddd6fe;
+  --pink: #db2777;
+  --pink-bg: #fdf2f8;
+  --pink-border: #fbcfe8;
+
+  --code-bg: #f2ede8;
+  --nav-h: 64px;
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  background: var(--white);
+  color: var(--text);
+  line-height: 1.65;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+}
+
+.nav-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.nav-logo {
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  color: var(--black);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-logo span {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0;
+  margin-left: 6px;
+  font-family: monospace;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  list-style: none;
+  flex: 1;
+}
+
+.nav-links a {
+  display: block;
+  padding: 6px 12px;
+  font-size: 13.5px;
+  color: var(--muted);
+  text-decoration: none;
+  border-radius: 6px;
+  transition: color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.nav-links a:hover { color: var(--text); background: var(--off-white); }
+
+.nav-cta {
+  margin-left: auto;
+  background: var(--black);
+  color: var(--white) !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+  font-size: 13px !important;
+  flex-shrink: 0;
+}
+
+.nav-cta:hover { background: #333 !important; color: var(--white) !important; }
+
+.nav-hamburger {
+  display: none;
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  color: var(--text);
+}
+
+.nav-mobile {
+  display: none;
+  position: fixed;
+  top: var(--nav-h);
+  left: 0; right: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px 24px;
+  z-index: 99;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nav-mobile.open { display: flex; }
+.nav-mobile a {
+  display: block;
+  padding: 10px 12px;
+  font-size: 15px;
+  color: var(--text);
+  text-decoration: none;
+  border-radius: 8px;
+}
+.nav-mobile a:hover { background: var(--off-white); }
+
+/* ─── LAYOUT ─── */
+.container {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.container-narrow {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section { padding: 80px 0; }
+section + section { border-top: 1px solid var(--border); }
+
+/* ─── HERO ─── */
+.hero {
+  background: var(--black);
+  padding: 100px 0 90px;
+}
+
+.hero-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #1e1c1a;
+  border: 1px solid #2d2925;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 12px;
+  color: #9e9890;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  margin-bottom: 24px;
+}
+
+.hero-badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.hero h1 {
+  font-size: clamp(52px, 7vw, 80px);
+  font-weight: 800;
+  letter-spacing: -3px;
+  line-height: 0.95;
+  color: var(--white);
+  margin-bottom: 24px;
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: #9e9890;
+  line-height: 1.6;
+  max-width: 440px;
+  margin-bottom: 36px;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.15s;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-primary { background: var(--white); color: var(--black); }
+.btn-primary:hover { background: #e8e4df; }
+.btn-ghost { background: transparent; color: #9e9890; border: 1px solid #2d2925; }
+.btn-ghost:hover { background: #1e1c1a; color: var(--white); }
+
+.hero-visual {
+  background: #161412;
+  border: 1px solid #2a2520;
+  border-radius: 14px;
+  padding: 28px 32px;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 14px;
+  line-height: 2;
+}
+
+.hero-visual .comment {
+  color: #4a4540;
+  font-size: 11px;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.v-G { color: #f59e0b; font-weight: 700; }
+.v-C { color: #d97706; }
+.v-D { color: #d97706; }
+.v-O { color: #60a5fa; font-weight: 700; }
+.v-A { color: #93c5fd; }
+.v-T { color: #a5b4fc; }
+.v-R { color: #6ee7b7; }
+.v-K { color: #6ee7b7; }
+.v-B { color: #86efac; font-style: italic; }
+.v-W { color: #c4b5fd; font-weight: 700; }
+.v-F { color: #f9a8d4; }
+.v-N { color: #374151; font-style: italic; }
+
+/* ─── SECTION HEADERS ─── */
+.section-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+h2 {
+  font-size: clamp(28px, 4vw, 40px);
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+
+.section-lead {
+  font-size: 17px;
+  color: var(--muted);
+  max-width: 600px;
+  line-height: 1.65;
+  margin-bottom: 48px;
+}
+
+h3 {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  margin-bottom: 10px;
+}
+
+p { margin-bottom: 14px; color: #3d3930; }
+
+/* ─── HOW IT WORKS ─── */
+.steps-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.step-card {
+  background: var(--white);
+  padding: 32px 28px;
+}
+
+.step-num {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--light-muted);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.step-card h3 { font-size: 17px; margin-bottom: 8px; }
+.step-card p { font-size: 14px; color: var(--muted); margin-bottom: 0; }
+
+/* ─── ALPHABET ─── */
+.alphabet-section { background: var(--off-white); }
+
+.layer-group { margin-bottom: 48px; }
+.layer-group:last-child { margin-bottom: 0; }
+
+.layer-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+}
+
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.letter-card {
+  border-radius: 12px;
+  padding: 20px 22px;
+  border: 1px solid;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.letter-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.lc-letter {
+  font-size: 36px;
+  font-weight: 800;
+  letter-spacing: -1px;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.lc-name {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  opacity: 0.65;
+}
+
+.lc-desc { font-size: 13px; line-height: 1.45; opacity: 0.82; margin-bottom: 0; }
+
+.lf { background: var(--amber-bg); border-color: var(--amber-border); color: #78350f; }
+.lf .lc-letter { color: var(--amber); }
+.le { background: var(--blue-bg); border-color: var(--blue-border); color: #1e3a8a; }
+.le .lc-letter { color: var(--blue); }
+.ld { background: var(--green-bg); border-color: var(--green-border); color: #064e3b; }
+.ld .lc-letter { color: var(--green); }
+.lfl { background: var(--purple-bg); border-color: var(--purple-border); color: #4c1d95; }
+.lfl .lc-letter { color: var(--purple); }
+.lo { background: var(--pink-bg); border-color: var(--pink-border); color: #831843; }
+.lo .lc-letter { color: var(--pink); }
+
+/* ─── O+A MODEL ─── */
+.model-section {
+  background: var(--black);
+  color: var(--white);
+}
+
+.model-section h2 { color: var(--white); }
+.model-section .section-eyebrow { color: #4a4540; }
+.model-section .section-lead { color: #9e9890; }
+
+.model-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.model-visual {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+.mv-o {
+  width: 100%;
+  background: #1a3a6b;
+  border: 1px solid #2d5fa8;
+  border-radius: 12px;
+  padding: 20px 24px;
+  text-align: center;
+}
+
+.mv-o .tag { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #60a5fa; margin-bottom: 4px; }
+.mv-o .name { font-size: 18px; font-weight: 700; color: var(--white); }
+.mv-o .desc { font-size: 12px; color: #93c5fd; margin-top: 4px; margin-bottom: 0; }
+
+.mv-arrows {
+  display: flex;
+  justify-content: space-around;
+  width: 80%;
+  padding: 12px 0;
+  color: #2d2925;
+  font-size: 14px;
+  gap: 16px;
+}
+
+.mv-arrow { flex: 1; text-align: center; }
+.mv-arrow::before { content: '↓'; color: #3d3930; font-size: 20px; }
+
+.mv-agents {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  width: 100%;
+}
+
+.mv-a {
+  background: #161412;
+  border: 1px solid #2a2520;
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+}
+
+.mv-a .tag { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #4a4540; margin-bottom: 4px; }
+.mv-a .name { font-size: 13px; font-weight: 600; color: #c8c2bb; margin-bottom: 0; }
+
+.resp-list { display: flex; flex-direction: column; gap: 20px; }
+
+.resp-item { display: flex; gap: 16px; }
+
+.resp-icon {
+  width: 44px; height: 44px; min-width: 44px;
+  background: #161412;
+  border: 1px solid #2a2520;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.resp-content h4 { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+.resp-content p { font-size: 13.5px; color: #6b6560; margin-bottom: 0; }
+
+/* ─── PHASES ─── */
+.phases-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  counter-reset: phase;
+}
+
+.phase-item {
+  padding: 36px 28px;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.phase-item:last-child { border-right: none; }
+
+.phase-num {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--light-muted);
+  margin-bottom: 16px;
+}
+
+.phase-icon {
+  font-size: 28px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.phase-item h3 { font-size: 16px; margin-bottom: 8px; }
+.phase-item p { font-size: 13px; color: var(--muted); margin-bottom: 0; }
+
+/* ─── EXAMPLES ─── */
+.examples-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.example-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ex-header {
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.ex-tag {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.tag-simple { background: var(--off-white); color: var(--muted); }
+.tag-o { background: var(--blue-bg); color: var(--blue); }
+
+.ex-header h3 { font-size: 18px; margin-bottom: 4px; }
+.ex-header p { font-size: 13px; color: var(--muted); margin-bottom: 0; }
+
+.ex-note {
+  background: var(--off-white);
+  padding: 20px 28px;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.9;
+  border-bottom: 1px solid var(--border);
+}
+
+.ex-insight {
+  padding: 20px 28px;
+}
+
+.ex-insight h4 { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.ex-insight p { font-size: 13.5px; margin-bottom: 0; color: var(--muted); }
+
+/* ─── QUICK REF ─── */
+.ref-section { background: var(--off-white); }
+
+.ref-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background: var(--white);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.ref-table thead th {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--off-white);
+  border-bottom: 1px solid var(--border);
+}
+
+.ref-table tbody td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.ref-table tbody tr:last-child td { border-bottom: none; }
+.ref-table tbody tr:hover { background: #faf9f7; }
+
+.lp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 15px;
+}
+
+/* ─── TIPS ─── */
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.tip-card {
+  background: var(--off-white);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.tip-card h3 { font-size: 16px; margin-bottom: 8px; }
+.tip-card p { font-size: 13.5px; color: var(--muted); margin-bottom: 0; }
+
+/* ─── CALLOUTS ─── */
+.callout {
+  display: flex;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  margin: 20px 0;
+  font-size: 14px;
+}
+
+.callout-blue { background: var(--blue-bg); border: 1px solid var(--blue-border); color: #1e3a8a; }
+.callout-green { background: var(--green-bg); border: 1px solid var(--green-border); color: #064e3b; }
+.callout-amber { background: var(--amber-bg); border: 1px solid var(--amber-border); color: #78350f; }
+
+.callout-icon { font-size: 16px; line-height: 1.5; flex-shrink: 0; }
+
+/* ─── NOTE BLOCK ─── */
+.note-block {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px 26px;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 13.5px;
+  line-height: 1.95;
+  margin: 16px 0;
+}
+
+code {
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
+  font-size: 13px;
+}
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--black);
+  color: #4a4540;
+  padding: 40px 0;
+  font-size: 13px;
+}
+
+.footer-inner {
+  max-width: 1140px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-logo { font-size: 16px; font-weight: 800; color: #9e9890; }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  .hero-inner { grid-template-columns: 1fr; gap: 40px; }
+  .hero { padding: 72px 0 64px; }
+  .steps-grid { grid-template-columns: 1fr 1fr; }
+  .examples-grid { grid-template-columns: 1fr; }
+  .model-grid { grid-template-columns: 1fr; }
+  .phases-grid { grid-template-columns: 1fr 1fr 1fr; }
+  .tips-grid { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+  .nav-hamburger { display: block; }
+}
+
+@media (max-width: 600px) {
+  section { padding: 56px 0; }
+  .steps-grid { grid-template-columns: 1fr; }
+  .phases-grid { grid-template-columns: 1fr 1fr; }
+  .tips-grid { grid-template-columns: 1fr; }
+  .mv-agents { grid-template-columns: 1fr; }
+  .hero h1 { letter-spacing: -2px; }
+  .hero-visual { display: none; }
+  .ref-table { font-size: 13px; }
+}
+
+@media (max-width: 420px) {
+  .phases-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">N.O.T.E. <span>v1.2.0</span></a>
+    <ul class="nav-links">
+      <li><a href="#how-it-works">How it works</a></li>
+      <li><a href="#alphabet">The alphabet</a></li>
+      <li><a href="#orchestrator">Orchestrator</a></li>
+      <li><a href="#examples">Examples</a></li>
+      <li><a href="#reference">Reference</a></li>
+      <li><a href="#tips">Tips</a></li>
+    </ul>
+    <a href="#how-it-works" class="btn btn-primary nav-cta">Get started →</a>
+    <button class="nav-hamburger" onclick="toggleMenu()" aria-label="Menu">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+        <rect y="3" width="20" height="2" rx="1"/>
+        <rect y="9" width="20" height="2" rx="1"/>
+        <rect y="15" width="20" height="2" rx="1"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<div class="nav-mobile" id="mobileMenu">
+  <a href="#how-it-works" onclick="closeMenu()">How it works</a>
+  <a href="#alphabet" onclick="closeMenu()">The alphabet</a>
+  <a href="#orchestrator" onclick="closeMenu()">Orchestrator</a>
+  <a href="#examples" onclick="closeMenu()">Examples</a>
+  <a href="#reference" onclick="closeMenu()">Reference</a>
+  <a href="#tips" onclick="closeMenu()">Tips</a>
+</div>
+
+<!-- ─── HERO ─── -->
+<div class="hero">
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">
+        <span class="dot"></span>
+        N.O.T.E. — Note Orchestration & Task Execution
+      </div>
+      <h1>Write a note.<br>Deploy a team.</h1>
+      <p class="hero-sub">NOTE turns shorthand letter-coded notes into structured, executed multi-agent workflows. Write by hand or type. Each agent gets a full brief. You stay in control.</p>
+      <div class="hero-actions">
+        <a href="#how-it-works" class="btn btn-primary">Learn how it works →</a>
+        <a href="#alphabet" class="btn btn-ghost">See the alphabet</a>
+      </div>
+    </div>
+
+    <div class="hero-visual">
+      <div class="comment">// A N.O.T.E. example</div>
+      <div><span class="v-G">G</span>  Launch Volta in London</div>
+      <div><span class="v-C">C</span>  Premium electric scooter brand</div>
+      <div><span class="v-O">O</span>  Lead Strategist</div>
+      <div><span class="v-A">A</span>  Research Analyst</div>
+      <div><span class="v-R">R</span>  volta.co</div>
+      <div><span class="v-A">A</span>  Creative Director</div>
+      <div><span class="v-B">B</span>  Bold, minimal, not tech-bro</div>
+      <div><span class="v-W">W</span>  Review before creative</div>
+      <div><span class="v-A">A</span>  Copywriter</div>
+      <div><span class="v-F">F</span>  PDF launch brief</div>
+      <div><span class="v-N">N</span>  Check with client first</div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── HOW IT WORKS ─── -->
+<section id="how-it-works">
+  <div class="container">
+    <div class="section-eyebrow">Getting started</div>
+    <h2>From note to execution in four steps</h2>
+    <p class="section-lead">Write a note. Claude reads it, builds a full execution plan, shows it to you, and waits for your go. Nothing runs until you approve it.</p>
+
+    <div class="steps-grid">
+      <div class="step-card">
+        <div class="step-num">Step 01</div>
+        <h3>Write your note</h3>
+        <p>Each line starts with a capital letter prefix. G for goal, A for agent, T for task, W for checkpoint. Type it or photograph a handwritten note.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 02</div>
+        <h3>Share it</h3>
+        <p>Paste the note or upload your photo. Say "run my note" or "execute this" — NOTE recognises the format automatically.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 03</div>
+        <h3>Review the plan</h3>
+        <p>Claude surfaces the full execution plan — every agent, every tool, every capability it will use — before anything runs. No surprises.</p>
+      </div>
+      <div class="step-card">
+        <div class="step-num">Step 04</div>
+        <h3>Say "go"</h3>
+        <p>Agents execute in order. You pause at any W checkpoints you wrote. Each agent's output is saved to a brief file. Synthesis at the end.</p>
+      </div>
+    </div>
+
+    <div style="margin-top: 40px;">
+      <p class="section-eyebrow" style="margin-bottom: 12px;">Minimum viable note</p>
+      <div class="note-block">
+        <span class="v-G">G</span>  Map London opportunity landscape for brand launch<br>
+        <span class="v-A">A</span>  Research Analyst<br>
+        <span class="v-A">A</span>  Strategist<br>
+        <span class="v-T">T</span>  Compile into a launch brief<br>
+        <span class="v-F">F</span>  PDF report
+      </div>
+      <div class="callout callout-blue">
+        <span class="callout-icon">ℹ️</span>
+        <span>No G? NOTE infers a goal from your agents and tasks, shows it to you, and asks you to confirm before running anything.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ALPHABET ─── -->
+<section id="alphabet" class="alphabet-section">
+  <div class="container">
+    <div class="section-eyebrow">The system</div>
+    <h2>19 letters across 5 layers</h2>
+    <p class="section-lead">Each letter tells NOTE what kind of item it is and when it takes effect. Write them in any combination — order within the note determines W checkpoint positioning and B brief attachment.</p>
+
+    <div class="layer-group">
+      <div class="layer-label" style="background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-border);">🧭 Framing — G C D N</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Read first. Applied globally to every agent in the run.</p>
+      <div class="letter-grid">
+        <div class="letter-card lf">
+          <div class="lc-letter">G</div>
+          <div class="lc-name">Goal</div>
+          <p class="lc-desc">The north star. Everything else serves this outcome.</p>
+        </div>
+        <div class="letter-card lf">
+          <div class="lc-letter">C</div>
+          <div class="lc-name">Context</div>
+          <p class="lc-desc">Background every agent absorbs. Brand, history, product.</p>
+        </div>
+        <div class="letter-card lf">
+          <div class="lc-letter">D</div>
+          <div class="lc-name">Directive</div>
+          <p class="lc-desc">Non-negotiable constraints. "No food delivery mentions."</p>
+        </div>
+        <div class="letter-card lf">
+          <div class="lc-letter">N</div>
+          <div class="lc-name">Note</div>
+          <p class="lc-desc">Your annotation. Logged and surfaced in the plan — never executed.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-label" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-border);">⚡ Execution — O A T</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Who does the work and what they produce.</p>
+      <div class="letter-grid">
+        <div class="letter-card le">
+          <div class="lc-letter">O</div>
+          <div class="lc-name">Orchestrator</div>
+          <p class="lc-desc">Team lead agent. Sets dispatch order, reviews every output, owns synthesis.</p>
+        </div>
+        <div class="letter-card le">
+          <div class="lc-letter">A</div>
+          <div class="lc-name">Agent</div>
+          <p class="lc-desc">A purpose-built specialist — gets a full self-contained brief file before running.</p>
+        </div>
+        <div class="letter-card le">
+          <div class="lc-letter">T</div>
+          <div class="lc-name">Task</div>
+          <p class="lc-desc">A concrete deliverable or synthesis step. Run after agents complete.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-label" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-border);">📦 Data — R K I B</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Feed information into agents before they run.</p>
+      <div class="letter-grid">
+        <div class="letter-card ld">
+          <div class="lc-letter">R</div>
+          <div class="lc-name">Resource</div>
+          <p class="lc-desc">A URL or file to fetch. Pulled via your browser before agents run.</p>
+        </div>
+        <div class="letter-card ld">
+          <div class="lc-letter">K</div>
+          <div class="lc-name">Knowledge</div>
+          <p class="lc-desc">A personal KB lookup. Retrieved before agents run. Flags if not found.</p>
+        </div>
+        <div class="letter-card ld">
+          <div class="lc-letter">I</div>
+          <div class="lc-name">Input</div>
+          <p class="lc-desc">Explicit data to pass — budget, targets, parameters.</p>
+        </div>
+        <div class="letter-card ld">
+          <div class="lc-letter">B</div>
+          <div class="lc-name">Brief</div>
+          <p class="lc-desc">Detailed spec. Attaches to the A item directly above it. Never forward.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-label" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-border);">🔀 Flow — P W L S</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Control when and how things run.</p>
+      <div class="letter-grid">
+        <div class="letter-card lfl">
+          <div class="lc-letter">P</div>
+          <div class="lc-name">Priority</div>
+          <p class="lc-desc">Override run order. P1 runs before P2 before P3.</p>
+        </div>
+        <div class="letter-card lfl">
+          <div class="lc-letter">W</div>
+          <div class="lc-name">Wait</div>
+          <p class="lc-desc">Human checkpoint. Positional — pauses exactly where it appears in the note.</p>
+        </div>
+        <div class="letter-card lfl">
+          <div class="lc-letter">L</div>
+          <div class="lc-name">Loop</div>
+          <p class="lc-desc">Repeat an A or T N times or until a condition is met.</p>
+        </div>
+        <div class="letter-card lfl">
+          <div class="lc-letter">S</div>
+          <div class="lc-name">Schedule</div>
+          <p class="lc-desc">Run at a future time or on a repeating cadence.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="layer-group">
+      <div class="layer-label" style="background:var(--pink-bg);color:var(--pink);border:1px solid var(--pink-border);">📤 Output — F E M V</div>
+      <p style="font-size:14px;color:var(--muted);margin-bottom:16px;">Where results go and in what form.</p>
+      <div class="letter-grid">
+        <div class="letter-card lo">
+          <div class="lc-letter">F</div>
+          <div class="lc-name">Format</div>
+          <p class="lc-desc">Output format: PDF, PPTX, DOCX, Markdown, Craft doc.</p>
+        </div>
+        <div class="letter-card lo">
+          <div class="lc-letter">E</div>
+          <div class="lc-name">Export</div>
+          <p class="lc-desc">Destination: Craft, Todoist, email draft, or folder.</p>
+        </div>
+        <div class="letter-card lo">
+          <div class="lc-letter">M</div>
+          <div class="lc-name">Memory</div>
+          <p class="lc-desc">Save a summary to your personal knowledge base after delivery.</p>
+        </div>
+        <div class="letter-card lo">
+          <div class="lc-letter">V</div>
+          <div class="lc-name">Validate</div>
+          <p class="lc-desc">Quality-check output against G and D before continuing.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── PHASES ─── -->
+<section id="phases">
+  <div class="container">
+    <div class="section-eyebrow">Execution</div>
+    <h2>Every run follows the same four phases</h2>
+    <p class="section-lead">Nothing executes until you say go. Phase 2 — the plan — is always shown to you first.</p>
+
+    <div style="border:1px solid var(--border); border-radius:14px; overflow:hidden; margin-top: 8px;">
+      <div class="phases-grid">
+        <div class="phase-item">
+          <div class="phase-num">Phase 00</div>
+          <span class="phase-icon">👁</span>
+          <h3>Input recognition</h3>
+          <p>Photo or typed text — Claude reads it either way. Handwritten? Transcription shown for correction before anything runs.</p>
+        </div>
+        <div class="phase-item">
+          <div class="phase-num">Phase 01</div>
+          <span class="phase-icon">📦</span>
+          <h3>Parse & pre-load</h3>
+          <p>R URLs are fetched via your browser. K items queried from your KB. All data lands before agents are briefed.</p>
+        </div>
+        <div class="phase-item">
+          <div class="phase-num">Phase 02</div>
+          <span class="phase-icon">📋</span>
+          <h3>Show the plan</h3>
+          <p>Full execution plan surfaced: agents, order, every tool, every capability. You see it all. Adjust or say "go".</p>
+        </div>
+        <div class="phase-item">
+          <div class="phase-num">Phase 03</div>
+          <span class="phase-icon">⚡</span>
+          <h3>Execute</h3>
+          <p>Brief files created. Agents run in order. W checkpoints pause for your review. Outputs saved to .md files.</p>
+        </div>
+        <div class="phase-item" style="border-right:none;">
+          <div class="phase-num">Phase 04</div>
+          <span class="phase-icon">✅</span>
+          <h3>Synthesise & deliver</h3>
+          <p>All outputs compiled into your F format. E routes to destination. M saves to KB. Final result in chat.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-green" style="margin-top:24px;">
+      <span class="callout-icon">✅</span>
+      <span><strong>Every agent gets a brief file.</strong> Before any agent runs, Claude creates a <code>[agent-slug]-brief.md</code> that is fully self-contained. The agent operates only from that file — no memory of prior sessions.</span>
+    </div>
+  </div>
+</section>
+
+<!-- ─── ORCHESTRATOR ─── -->
+<section id="orchestrator" class="model-section">
+  <div class="container">
+    <div class="section-eyebrow">Agents</div>
+    <h2>The Orchestrator (O)</h2>
+    <p class="section-lead">When you add an O line, you're not picking a generic manager. You're creating a purpose-built team lead that's built specifically from your note and manages every specialist agent beneath it.</p>
+
+    <div class="model-grid">
+      <div class="model-visual">
+        <div class="mv-o">
+          <div class="tag">O — Orchestrator</div>
+          <div class="name">e.g. "Lead Strategist"</div>
+          <p class="desc">Dispatch plan · Output review · Final synthesis</p>
+        </div>
+        <div class="mv-arrows">
+          <span class="mv-arrow"></span>
+          <span class="mv-arrow"></span>
+          <span class="mv-arrow"></span>
+        </div>
+        <div class="mv-agents">
+          <div class="mv-a">
+            <div class="tag">Agent</div>
+            <p class="name">Research Analyst</p>
+          </div>
+          <div class="mv-a">
+            <div class="tag">Agent</div>
+            <p class="name">Copywriter</p>
+          </div>
+          <div class="mv-a">
+            <div class="tag">Agent</div>
+            <p class="name">Creative Director</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="resp-list">
+        <div class="resp-item">
+          <div class="resp-icon">📋</div>
+          <div class="resp-content">
+            <h4>Dispatch planning</h4>
+            <p>Before any agent runs, O reads all agent briefs and produces a dispatch plan — ordered sequence, rationale, and acceptance criteria per agent.</p>
+          </div>
+        </div>
+        <div class="resp-item">
+          <div class="resp-icon">🔍</div>
+          <div class="resp-content">
+            <h4>Output review</h4>
+            <p>After each agent, O reviews the output against its criteria. Approve → next agent runs. Flag → execution pauses. O never silently carries weak output forward.</p>
+          </div>
+        </div>
+        <div class="resp-item">
+          <div class="resp-icon">🧩</div>
+          <div class="resp-content">
+            <h4>Final synthesis</h4>
+            <p>O reads all approved outputs and produces the final deliverable — coherent because O had full context from the start, not a mechanical stitch-job.</p>
+          </div>
+        </div>
+        <div class="resp-item">
+          <div class="resp-icon">📚</div>
+          <div class="resp-content">
+            <h4>O's brief is built last</h4>
+            <p>All A agent briefs are created first. O's brief receives every agent brief as an appendix. O knows exactly what each specialist has been asked to do before it plans.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── EXAMPLES ─── -->
+<section id="examples">
+  <div class="container">
+    <div class="section-eyebrow">Worked examples</div>
+    <h2>Notes in the wild</h2>
+    <p class="section-lead">Two real notes showing how the system works — with and without an Orchestrator.</p>
+
+    <div class="examples-grid">
+      <!-- Example 1 -->
+      <div class="example-card">
+        <div class="ex-header">
+          <div class="ex-tag tag-simple">No Orchestrator</div>
+          <h3>City launch — market research</h3>
+          <p>6 independent research agents + 4 synthesis tasks. No G written — goal is inferred.</p>
+        </div>
+        <div class="ex-note">
+          <span class="v-A">A</span>  Find out events in the city<br>
+          <span class="v-A">A</span>  Find out trade shows and exhibitions<br>
+          <span class="v-A">A</span>  Research relevant meetups<br>
+          <span class="v-A">A</span>  Research sports &amp; fitness events<br>
+          <span class="v-T">T</span>  Compile intelligence report<br>
+          <span class="v-T">T</span>  Brand activation ideas<br>
+          <span class="v-T">T</span>  Calendar of opportunities<br>
+          <span class="v-T">T</span>  Map pop-up locations<br>
+          <span class="v-A">A</span>  Research potential collaborators<br>
+          <span class="v-A">A</span>  Research micro &amp; nano influencers
+        </div>
+        <div class="ex-insight">
+          <h4>What NOTE does</h4>
+          <p>No G → goal inferred and flagged for confirmation. 6 research agents are parallelisable (no dependencies). 4 T items run after all research completes.</p>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="example-card">
+        <div class="ex-header">
+          <div class="ex-tag tag-o">With Orchestrator</div>
+          <h3>New business pitch — full feature set</h3>
+          <p>O orchestrator, K + R pre-load, B brief, N annotation, PPTX output.</p>
+        </div>
+        <div class="ex-note">
+          <span class="v-G">G</span>  Prepare pitch — Volta Electric<br>
+          <span class="v-C">C</span>  Premium e-scooter, urban commuters<br>
+          <span class="v-R">R</span>  volta.co<br>
+          <span class="v-K" style="color:#6ee7b7;">K</span>  Volta brand guidelines<br>
+          <span class="v-O">O</span>  Lead Strategist<br>
+          <span class="v-A">A</span>  Research + Competitive<br>
+          <span class="v-A">A</span>  Copywriter<br>
+          <span class="v-B">B</span>  3 headlines. Punchy. Under 8 words.<br>
+          <span class="v-T">T</span>  Create pitch deck outline<br>
+          <span class="v-F">F</span>  PPTX<br>
+          <span class="v-N">N</span>  Check brand assets before sending
+        </div>
+        <div class="ex-insight">
+          <h4>What NOTE does</h4>
+          <p>R fetched via browser before briefing. K queried from KB. B attaches to Copywriter (immediately above). N logged but not executed. PPTX skill declared as required capability in plan before "go".</p>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top: 24px;">
+      <div class="callout callout-amber">
+        <span class="callout-icon">💡</span>
+        <span><strong>B always looks backwards.</strong> A B item attaches to the A item directly above it — never to the one below. Write B on the line immediately after the A it's briefing.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── QUICK REFERENCE ─── -->
+<section id="reference" class="ref-section">
+  <div class="container">
+    <div class="section-eyebrow">Reference</div>
+    <h2>All 19 letters at a glance</h2>
+    <p class="section-lead">Print this or keep it open when writing notes.</p>
+
+    <table class="ref-table">
+      <thead>
+        <tr>
+          <th width="52">Letter</th>
+          <th width="110">Name</th>
+          <th width="90">Layer</th>
+          <th width="130">When</th>
+          <th>Example</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><span class="lp" style="background:var(--amber-bg);color:var(--amber);">G</span></td><td><strong>Goal</strong></td><td>Framing</td><td>Parse only</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">G Launch Volta in London</td></tr>
+        <tr><td><span class="lp" style="background:var(--amber-bg);color:var(--amber);">C</span></td><td><strong>Context</strong></td><td>Framing</td><td>Parse only</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">C Premium e-scooter brand</td></tr>
+        <tr><td><span class="lp" style="background:var(--amber-bg);color:var(--amber);">D</span></td><td><strong>Directive</strong></td><td>Framing</td><td>Parse only</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">D No budget brand comparisons</td></tr>
+        <tr><td><span class="lp" style="background:var(--amber-bg);color:var(--amber);">N</span></td><td><strong>Note</strong></td><td>Framing</td><td>Logged, skipped</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">N Check with client first</td></tr>
+        <tr><td><span class="lp" style="background:var(--blue-bg);color:var(--blue);">O</span></td><td><strong>Orchestrator</strong></td><td>Execution</td><td>Built after A briefs</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">O Lead Strategist</td></tr>
+        <tr><td><span class="lp" style="background:var(--blue-bg);color:var(--blue);">A</span></td><td><strong>Agent</strong></td><td>Execution</td><td>After O brief</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">A Creative Director</td></tr>
+        <tr><td><span class="lp" style="background:var(--blue-bg);color:var(--blue);">T</span></td><td><strong>Task</strong></td><td>Execution</td><td>With or after A</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">T Compile intelligence report</td></tr>
+        <tr><td><span class="lp" style="background:var(--green-bg);color:var(--green);">R</span></td><td><strong>Resource</strong></td><td>Data</td><td>Before agents</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">R volta.co</td></tr>
+        <tr><td><span class="lp" style="background:var(--green-bg);color:var(--green);">K</span></td><td><strong>Knowledge</strong></td><td>Data</td><td>Before agents</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">K brand guidelines</td></tr>
+        <tr><td><span class="lp" style="background:var(--green-bg);color:var(--green);">I</span></td><td><strong>Input</strong></td><td>Data</td><td>In brief</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">I Budget: $20,000</td></tr>
+        <tr><td><span class="lp" style="background:var(--green-bg);color:var(--green);">B</span></td><td><strong>Brief</strong></td><td>Data</td><td>Preceding A only</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">B Punchy, under 8 words</td></tr>
+        <tr><td><span class="lp" style="background:var(--purple-bg);color:var(--purple);">P</span></td><td><strong>Priority</strong></td><td>Flow</td><td>Reorders A/T</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">P1 Research before creative</td></tr>
+        <tr><td><span class="lp" style="background:var(--purple-bg);color:var(--purple);">W</span></td><td><strong>Wait</strong></td><td>Flow</td><td>Positional pause</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">W Review before creative</td></tr>
+        <tr><td><span class="lp" style="background:var(--purple-bg);color:var(--purple);">L</span></td><td><strong>Loop</strong></td><td>Flow</td><td>Repeats A/T</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">L 3 A Copywriter</td></tr>
+        <tr><td><span class="lp" style="background:var(--purple-bg);color:var(--purple);">S</span></td><td><strong>Schedule</strong></td><td>Flow</td><td>Defers run</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">S Every Monday 9am</td></tr>
+        <tr><td><span class="lp" style="background:var(--pink-bg);color:var(--pink);">F</span></td><td><strong>Format</strong></td><td>Output</td><td>After synthesis</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">F PDF report</td></tr>
+        <tr><td><span class="lp" style="background:var(--pink-bg);color:var(--pink);">E</span></td><td><strong>Export</strong></td><td>Output</td><td>After delivery</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">E Craft / Projects</td></tr>
+        <tr><td><span class="lp" style="background:var(--pink-bg);color:var(--pink);">M</span></td><td><strong>Memory</strong></td><td>Output</td><td>After delivery</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">M tag: campaign, launch</td></tr>
+        <tr><td><span class="lp" style="background:var(--pink-bg);color:var(--pink);">V</span></td><td><strong>Validate</strong></td><td>Output</td><td>After A/T</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">V Check against directives</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ─── TIPS ─── -->
+<section id="tips">
+  <div class="container">
+    <div class="section-eyebrow">Good to know</div>
+    <h2>Tips & edge cases</h2>
+    <p class="section-lead">Common questions from the first time through.</p>
+
+    <div class="tips-grid">
+      <div class="tip-card">
+        <h3>B always looks backwards</h3>
+        <p>B attaches to the A item directly above it — never below. Write B on the line immediately after the A it's briefing. If B has no preceding A, it becomes a T.</p>
+      </div>
+      <div class="tip-card">
+        <h3>W is positional, not terminal</h3>
+        <p>W doesn't wait until "all agents are done". It pauses exactly where it sits in your note. Agents above run first; agents below wait for your approval.</p>
+      </div>
+      <div class="tip-card">
+        <h3>K fallback</h3>
+        <p>If your personal KB isn't connected or the item isn't found, you'll see ⚠️ K: [item] — not found in the plan. Provide it, or say "proceed without it". NOTE never invents KB content.</p>
+      </div>
+      <div class="tip-card">
+        <h3>A always builds fresh</h3>
+        <p>A items create purpose-built agents by default. To use an existing plugin, name it explicitly: <code>A adops-suite Creative Director</code>. Otherwise a new agent is always built.</p>
+      </div>
+      <div class="tip-card">
+        <h3>No G? That's fine</h3>
+        <p>NOTE infers a goal from your agents and tasks, labels it "Inferred goal — correct me if wrong", and asks you to confirm. Nothing runs until you say yes.</p>
+      </div>
+      <div class="tip-card">
+        <h3>Training knowledge only</h3>
+        <p>Want no external tools at all? Add <code>D No web search — use existing knowledge only</code>. Every agent runs on training knowledge and labels outputs accordingly.</p>
+      </div>
+      <div class="tip-card">
+        <h3>Handwritten notes</h3>
+        <p>Photograph your note. Claude reads it directly via multimodal. Messy handwriting, crossed-out lines, and shorthand are all fine. Claude shows its transcription before running anything.</p>
+      </div>
+      <div class="tip-card">
+        <h3>Format capabilities</h3>
+        <p>PPTX needs the pptx skill. PDF needs the pdf skill. DOCX needs the docx skill. These are declared as required capabilities in the Phase 2 plan before you approve.</p>
+      </div>
+      <div class="tip-card">
+        <h3>O is optional</h3>
+        <p>Without O, Claude manages dispatch in note order. Add O only when you want a domain-specific team lead reviewing the work at every stage, not just at the end.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">N.O.T.E.</div>
+    <div>Note Orchestration & Task Execution · v1.2.0 · Updated 2026-06-08</div>
+  </div>
+</footer>
+
+<script>
+function toggleMenu() {
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// Close mobile menu on outside click
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('mobileMenu');
+  const btn = document.querySelector('.nav-hamburger');
+  if (!menu.contains(e.target) && !btn.contains(e.target)) {
+    menu.classList.remove('open');
+  }
+});
+
+// Smooth scroll for all anchor links
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const id = this.getAttribute('href').slice(1);
+    const target = id ? document.getElementById(id) : null;
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+</script>
+
+</body>
+</html>
