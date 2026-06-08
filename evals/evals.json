@@ -1,0 +1,47 @@
+{
+  "skill_name": "note-orchestrator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I've written my plan for the week [attached image of handwritten note with G, A, T items for a brand campaign]. Parse it and tell me what you'd execute.",
+      "expected_output": "Skill reads the image, transcribes the letter-coded items, presents a structured execution plan with inferred/explicit goal, lists agents to deploy with brief file names, identifies any W checkpoints, and waits for 'go' before executing.",
+      "files": [],
+      "expectations": [
+        "Skill presents a plan before executing — does not immediately dispatch agents",
+        "Each A item in the note results in a named brief file (e.g. creative-director-brief.md)",
+        "Goal (G) is identified or inferred and stated explicitly",
+        "Plan includes execution order (phase structure or sequential list)",
+        "User is prompted to say 'go' to proceed"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Run my note:\nG Launch Volta in London\nC Premium electric scooter brand, urban commuters\nD No comparisons to budget brands\nA Research Analyst\nA Strategist\nW Review before creative\nA Creative Director\nT Compile findings into a launch brief\nF PDF report\nE Craft",
+      "expected_output": "Skill parses all 10 letter-coded items correctly. Creates 3 agent brief files. Plan shows Research + Strategy running first, W checkpoint surfaced, Creative Director runs after checkpoint, final output is a PDF delivered to Craft.",
+      "files": [],
+      "expectations": [
+        "All 10 letter codes correctly identified and categorised",
+        "D directive ('No comparisons to budget brands') appears in every agent brief",
+        "W checkpoint is shown as a pause point in the plan between Strategy and Creative",
+        "3 agent brief files named correctly (research-analyst-brief.md, strategist-brief.md, creative-director-brief.md)",
+        "F = PDF report noted in output section of plan",
+        "E = Craft export noted in output section of plan"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Here's a note I wrote last night [typed]:\nG Prepare for new business pitch — Volta Electric\nC Premium e-scooter brand, urban commuters, 22–35\nR volta.co\nK Volta brand guidelines\nO Lead strategist\nA Research + Competitive\nA Copywriter\nB Write 3 positioning headlines. Punchy, not corporate. Under 8 words each.\nT Create pitch deck outline\nF PPTX\nN Double-check brand assets before sending",
+      "expected_output": "Skill parses 11 items including the multi-part B brief for copywriter. O (Orchestrator) is dispatched first with brief containing all other agents as context. B item correctly appended to copywriter-brief.md. N item logged but skipped. R item (URL) fetched before agents run.",
+      "files": [],
+      "expectations": [
+        "O (Orchestrator) identified and its brief lists all A agents",
+        "B brief content appears in copywriter-brief.md, not as a standalone item",
+        "N item is logged but explicitly excluded from execution",
+        "R item (volta.co) is noted as a resource to fetch before agents run",
+        "K item (Volta brand guidelines) is noted as a KB lookup",
+        "PPTX format identified from F item",
+        "9 total items correctly categorised (G, C, R, K, O, A, A, B, T, F, N)"
+      ]
+    }
+  ]
+}
