@@ -1,0 +1,236 @@
+# NOTE Examples — Worked Walk-throughs
+
+Two examples showing how a NOTE note gets parsed and what the execution plan looks like
+before "go".
+
+---
+
+## Example 1 — City launch market research (no G, parallel agents)
+
+**Original handwritten note:**
+```
+A  Find out events in the city
+A  Find out trade shows and exhibitions
+A  Research relevant meetups
+A  Research sports and fitness events
+T  Compile an intelligence report
+T  Come up with brand activation ideas
+T  Create a calendar of opportunities
+T  Map pop-up and stall locations
+A  Research potential collaborators
+A  Research micro and nano influencers
+```
+Legend at bottom: `A = Agent | T = Task`
+
+**Context:** A consumer goods brand (specialty coffee) planning a city launch. The user
+wrote this note quickly to kick off the research phase.
+
+---
+
+**How the skill parses this:**
+
+No explicit G — infer from content:
+> Inferred goal: Map the opportunity landscape for a brand launch — events, exhibitions,
+> meetups, sports, collaborations, and influencers as potential activation channels.
+> (Flagged to user before proceeding.)
+
+No O — Claude manages dispatch directly.
+
+Agent items (A): 6 research agents covering distinct verticals.
+Task items (T): 4 synthesis/ideation tasks — run after all A outputs are in.
+
+Execution order:
+- All 6 A items run in parallel (fully independent research)
+- T items run after A items complete (synthesise A outputs)
+- T items can also run in parallel once A outputs are available
+
+---
+
+**Execution plan presented to user:**
+
+```
+🎯 GOAL (inferred — please confirm or correct)
+Map the opportunity landscape for a brand launch: events, exhibitions, meetups, sports,
+collaborations, and influencers as potential activation channels.
+
+📋 EXECUTION PLAN
+
+Phase 1 — Research (all 6 run in parallel)
+  1. A: Events Researcher
+     → Find city events relevant to a consumer goods brand launch
+     🌐 Web search: Yes | 💻 Computer control: No
+  2. A: Exhibitions Researcher
+     → Find trade shows and exhibitions in the area
+     🌐 Web search: Yes | 💻 Computer control: No
+  3. A: Meetups Researcher
+     → Research community meetups relevant to the brand's audience
+     🌐 Web search: Yes | 💻 Computer control: No
+  4. A: Sports & Fitness Researcher
+     → Research sports and fitness events as activation venues
+     🌐 Web search: Yes | 💻 Computer control: No
+  5. A: Collaborations Researcher
+     → Research potential brand collaboration partners
+     🌐 Web search: Yes | 💻 Computer control: No
+  6. A: Influencer Researcher
+     → Research micro and nano influencers in the relevant niche
+     🌐 Web search: Yes | 💻 Computer control: No
+
+Phase 2 — Synthesis (after all Phase 1 outputs)
+  7. T: Compile intelligence report (from all 6 research outputs)
+  8. T: Generate brand activation ideas
+  9. T: Create opportunity calendar
+  10. T: Map pop-up and stall locations
+
+⚙️ CONSTRAINTS
+  None specified in note.
+
+📤 OUTPUT
+  Format not specified — defaulting to Markdown intelligence report.
+  6 agent brief files will be created.
+
+Does this look right? Say "go" to execute, or tell me what to change.
+```
+
+---
+
+**Agent brief files created (6 files):**
+
+- `events-researcher-brief.md`
+- `exhibitions-researcher-brief.md`
+- `meetups-researcher-brief.md`
+- `sports-fitness-researcher-brief.md`
+- `collaborations-researcher-brief.md`
+- `influencer-researcher-brief.md`
+
+Each brief includes: inferred goal, specific research task, brand context, no directives,
+no resources.
+
+---
+
+## Example 2 — Product campaign with Orchestrator (full alphabet usage)
+
+**Original handwritten note:**
+```
+G  "Make the Switch" product launch campaign
+C  SaaS productivity tool switching from competitor
+O  Lead Strategist
+T  Why users switch — pain points and triggers
+T  What makes us different — three core messages
+T  Visual tone — modern, clean, confident
+T  Platform: LinkedIn + paid search
+A  Research Analyst
+W  Review strategy before creative
+A  Creative Director
+B  Bold, direct — no enterprise jargon
+A  Copywriter
+F  Campaign brief PDF
+```
+Legend: `G = Goal | C = Context | O = Orchestrator | T = Task | A = Agent | W = Wait |
+B = Brief | F = Format`
+
+---
+
+**How the skill parses this:**
+
+G is explicit: `"Make the Switch" product launch campaign`
+
+C: SaaS tool, competing for switchers — context loaded into all agents.
+
+O present: `Lead Strategist` → build orchestrator brief after all A briefs exist.
+
+T items before first A: these are strategic framing tasks — not sequential deliverables,
+but the campaign's core problems to solve. They become embedded creative direction in
+every agent brief.
+
+W: positional checkpoint after Research Analyst, before Creative Director.
+
+B attached to `Creative Director` (immediately preceding A): "Bold, direct — no enterprise
+jargon" feeds into the Creative Director brief.
+
+Agent items (A): 3 specialists — research, creative direction, copy.
+
+---
+
+**Execution plan presented to user:**
+
+```
+🎯 GOAL
+"Make the Switch" product launch campaign — SaaS productivity tool
+
+📋 EXECUTION PLAN
+
+🧠 O: Lead Strategist — Team Lead
+   Role: Manages the agent team. Sets dispatch order, reviews each output,
+         owns final synthesis.
+   Capabilities: 🌐 No | 💻 No | 🛠️ Read/write agent outputs
+   Brief: lead-strategist-brief.md (all agent briefs as appendices)
+
+Strategic brief embedded in all agents:
+  · Why users switch — pain points and triggers
+  · What makes us different — three core messages
+  · Visual tone: modern, clean, confident
+  · Platform: LinkedIn + paid search
+
+1. A: Research Analyst
+   Task: Map competitor switching triggers, user pain points, and positioning angles
+   🌐 Web search: Yes | 💻 No
+   Managed by: Lead Strategist
+   Depends on: None
+
+⏸️ CHECKPOINT: W — Review strategy before creative
+   [Research Analyst output will be shown here. Nothing runs until you say "go".]
+
+2. A: Creative Director
+   Task: Campaign concept, visual language, messaging framework
+   Brief addition (B): Bold, direct — no enterprise jargon
+   🌐 No | 💻 No
+   Managed by: Lead Strategist
+   Depends on: Research Analyst output
+
+3. A: Copywriter
+   Task: LinkedIn post series, paid search headlines, landing page copy
+   🌐 No | 💻 No
+   Managed by: Lead Strategist
+   Depends on: Creative Director output
+
+⚙️ CONSTRAINTS
+  C: SaaS productivity tool switching from competitor
+
+📤 OUTPUT
+  F: Campaign brief PDF (pdf skill required)
+  3 agent brief files + 1 orchestrator brief will be created.
+
+Does this look right? Say "go" to execute, or tell me what to change.
+```
+
+---
+
+**Agent brief files created (4 files):**
+
+- `lead-strategist-brief.md` (O brief — includes all agent briefs as appendices)
+- `research-analyst-brief.md`
+- `creative-director-brief.md`
+- `copywriter-brief.md`
+
+O outputs: `orchestrator-dispatch.md`, `orchestrator-review-*.md`, `orchestrator-synthesis.md`
+
+---
+
+## Key lessons from these examples
+
+1. **T items before A items are often creative direction, not sequential tasks.** Read
+   the note holistically — context shapes how T items are interpreted.
+
+2. **Research agents are almost always parallel.** Independent verticals = run together.
+
+3. **When there's no G, the note content + any named project provides enough context to
+   infer one confidently.** Always flag the inference before executing.
+
+4. **B attaches backwards — to the A immediately before it, not the one after.**
+   In Example 2, "Bold, direct" attaches to Creative Director, not Copywriter.
+
+5. **W is positional.** Everything before the W runs first. The checkpoint appears
+   at exactly the right moment in the sequence — not at the end.
+
+6. **O changes the whole flow.** With an Orchestrator present, dispatch order is O's
+   decision. O reviews every output before the next agent starts.
