@@ -156,9 +156,10 @@ This exception applies to the entire note unless the user scopes it to specific 
 
 ## Building the Orchestrator (O) brief
 
-The O brief is built AFTER all A agent briefs exist, because O needs to know the full
-team it's managing. O is a purpose-built agent like any other — not a meta-instruction
-or a persona Claude adopts. It gets its own brief file and produces its own outputs.
+The O brief is built FIRST — from the raw note context, before any A agent briefs exist.
+O is a purpose-built agent like any other — not a meta-instruction or a persona Claude
+adopts. O receives the note ingredients and is responsible for building each A agent's
+brief before dispatching them. It gets its own brief file and produces its own outputs.
 
 ### O brief template
 
@@ -188,29 +189,36 @@ respects these constraints]
 ## Resources available to the team
 [R and K items — you determine which agents need access to which resources]
 
-## Your team
-[List of all A agents with their role and brief file reference]
-| Agent | Role | Brief file |
-|-------|------|-----------|
-| [Name] | [one sentence role description] | [agent-slug]-brief.md |
-| ... | ... | ... |
+## Your team to build
+[The A agents from this note — you will write their brief files before dispatching them.
+Use the agent brief template in SKILL.md Phase 3a.]
+| Agent label | Role (inferred from label) | B attachment | Brief file to create |
+|-------------|---------------------------|--------------|----------------------|
+| [A item text] | [2–3 sentence role definition] | [B text or None] | [agent-slug]-brief.md |
+| ... | ... | ... | ... |
 
 ## Your responsibilities in this run
 
-### 1. Dispatch planning
-Before any agent runs, produce a dispatch plan — written to `orchestrator-dispatch.md`:
+### 1. Build agent briefs
+For each A item in your team list, create `[agent-slug]-brief.md` before dispatching
+that agent. Use the agent brief template in SKILL.md Phase 3a. Each brief must be fully
+self-contained. Apply B attachments to their preceding A item.
+
+### 2. Dispatch planning
+After all agent briefs are ready, produce a dispatch plan written to
+`orchestrator-dispatch.md`:
 - Which agents run first (and why)
 - Which agents depend on another's output before starting
 - What you expect each agent to produce (your acceptance criteria)
 - Flag any gaps in the briefs you think need resolving before dispatch
 
-### 2. Output review (after each agent)
+### 3. Output review (after each agent)
 After each agent saves its output, you review it against your acceptance criteria:
 - Does it meet the bar? → Approve and proceed to the next agent
 - Does it fall short? → Flag the specific gap. Present to user before continuing.
   Do not silently carry forward weak output to the next agent.
 
-### 3. Final synthesis
+### 4. Final synthesis
 After all agents complete and outputs are approved:
 - Read all `*-output.md` files
 - Synthesise into a coherent final deliverable
@@ -219,17 +227,6 @@ After all agents complete and outputs are approved:
 
 ## Capabilities you have for this task
 [Listed exactly as declared in Phase 2 — nothing more]
-
-## Appendices — All agent briefs
-[Full contents of every agent brief file, pasted in here so O has complete context
-on what each agent has been asked to do]
-
-### Appendix A: [Agent Name] Brief
-[Full text of [agent-slug]-brief.md]
-
-### Appendix B: [Agent Name] Brief
-[Full text of [agent-slug]-brief.md]
-...
 ```
 
 ### O's output files
