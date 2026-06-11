@@ -266,6 +266,7 @@ section + section { border-top: 1px solid var(--border); }
   font-family: 'SF Mono', 'Monaco', 'Consolas', monospace;
   font-size: 14px;
   line-height: 2;
+  color: #c4bcb4;
 }
 
 .hero-visual .comment {
@@ -287,7 +288,7 @@ section + section { border-top: 1px solid var(--border); }
 .v-B { color: #86efac; font-style: italic; }
 .v-W { color: #c4b5fd; font-weight: 700; }
 .v-F { color: #f9a8d4; }
-.v-N { color: #374151; font-style: italic; }
+.v-N { color: #7a8898; font-style: italic; }
 
 /* ─── SECTION HEADERS ─── */
 .section-eyebrow {
@@ -1082,7 +1083,7 @@ footer {
           <div class="resp-icon">📋</div>
           <div class="resp-content">
             <h4>Dispatch planning</h4>
-            <p>Before any agent runs, O reads all agent briefs and produces a dispatch plan — ordered sequence, rationale, and acceptance criteria per agent.</p>
+            <p>O is briefed first from the note context. Before dispatching, O builds each agent's brief itself, then produces a dispatch plan — ordered sequence, rationale, and acceptance criteria per agent.</p>
           </div>
         </div>
         <div class="resp-item">
@@ -1102,8 +1103,8 @@ footer {
         <div class="resp-item">
           <div class="resp-icon">📚</div>
           <div class="resp-content">
-            <h4>O's brief is built last</h4>
-            <p>All A agent briefs are created first. O's brief receives every agent brief as an appendix. O knows exactly what each specialist has been asked to do before it plans.</p>
+            <h4>O's brief is built first</h4>
+            <p>O receives the raw note context — G, C, D, T, A list, W positions. O builds each agent's brief before dispatching them. The agent briefs are O's output, not its input.</p>
           </div>
         </div>
       </div>
@@ -1202,7 +1203,7 @@ footer {
         <tr><td><span class="lp" style="background:var(--amber-bg);color:var(--amber);">C</span></td><td><strong>Context</strong></td><td>Framing</td><td>Parse only</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">C Premium e-scooter brand</td></tr>
         <tr><td><span class="lp" style="background:var(--amber-bg);color:var(--amber);">D</span></td><td><strong>Directive</strong></td><td>Framing</td><td>Parse only</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">D No budget brand comparisons</td></tr>
         <tr><td><span class="lp" style="background:var(--amber-bg);color:var(--amber);">N</span></td><td><strong>Note</strong></td><td>Framing</td><td>Logged, skipped</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">N Check with client first</td></tr>
-        <tr><td><span class="lp" style="background:var(--blue-bg);color:var(--blue);">O</span></td><td><strong>Orchestrator</strong></td><td>Execution</td><td>Built after A briefs</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">O Lead Strategist</td></tr>
+        <tr><td><span class="lp" style="background:var(--blue-bg);color:var(--blue);">O</span></td><td><strong>Orchestrator</strong></td><td>Execution</td><td>Built first from note</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">O Lead Strategist</td></tr>
         <tr><td><span class="lp" style="background:var(--blue-bg);color:var(--blue);">A</span></td><td><strong>Agent</strong></td><td>Execution</td><td>After O brief</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">A Creative Director</td></tr>
         <tr><td><span class="lp" style="background:var(--blue-bg);color:var(--blue);">T</span></td><td><strong>Task</strong></td><td>Execution</td><td>With or after A</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">T Compile intelligence report</td></tr>
         <tr><td><span class="lp" style="background:var(--green-bg);color:var(--green);">R</span></td><td><strong>Resource</strong></td><td>Data</td><td>Before agents</td><td style="color:var(--muted);font-family:monospace;font-size:12px;">R volta.co</td></tr>
