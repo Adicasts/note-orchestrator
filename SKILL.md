@@ -5,9 +5,9 @@ description: >
   using a letter-prefix notation system and turns them into executed multi-agent workflows.
   Use this skill immediately whenever the user shares an image of a handwritten note with
   letter codes (A, T, G, O, D, F, etc.) at the start of lines, pastes a typed note using
-  this notation, or says things like "run my note", "execute this note", "I’ve written a
-  NOTE plan", "deploy agents on this", "here’s my plan — go", "process this note",
-  "I’ve got tasks written down", or sends any message with lines beginning with single
+  this notation, or says things like "run my note", "execute this note", "I've written a
+  NOTE plan", "deploy agents on this", "here's my plan — go", "process this note",
+  "I've got tasks written down", or sends any message with lines beginning with single
   capital letters followed by task/goal/agent descriptions. The skill parses the note,
   presents a structured execution plan for approval, then dispatches agents and executes
   tasks — creating individual .md brief files for every agent deployed. Do not attempt
@@ -49,10 +49,10 @@ Extract and organise all items by their letter code, preserving the ORDER they a
 the note (order matters for W positioning and B attachment):
 
 1. **G** (Goal) — north star for everything else
-2. **O** (Orchestrator) — if present, becomes a purpose-built orchestrator agent with
-   its own brief. O manages the A agent team: sets dispatch order, reviews each agent's
-   output before the next runs, and owns final synthesis. O is built like any A agent
-   but operates at the team management layer above them.
+2. **O** (Orchestrator) — if present, becomes a purpose-built orchestrator agent built
+   FIRST from the raw note context. O receives the note ingredients (G, C, D, T, A list,
+   W positions) and is responsible for building each A agent's brief, dispatching them,
+   handling W checkpoints, reviewing outputs, and owning final synthesis.
 3. **A** (Agent) — each becomes a purpose-built specialist
 4. **T** (Task) — concrete deliverables or steps
 5. Framing: **C** (Context), **D** (Directive), **R** (Resource), **K** (Knowledge),
@@ -92,10 +92,10 @@ Use this format:
 [If O is present, show it first as team lead, then list all A agents it manages]
 
 🧠 O: [Orchestrator Name] — Team Lead
-   Role: Manages the agent team below. Sets dispatch order, reviews each output,
-         owns final synthesis.
+   Role: Briefed first from note context. Builds agent briefs, sets dispatch order,
+         handles W checkpoints, reviews outputs, owns final synthesis.
    Capabilities: 🌐 [Yes/No] | 💻 [Yes/No — apps] | 🛠️ [files]
-   Brief: orchestrator-brief.md (contains all agent briefs as appendices)
+   Brief: orchestrator-brief.md (receives note context; builds agent briefs itself)
 
 [Then list each A agent in note order, showing O's management relationship:]
 1. A: [Agent Name]
@@ -130,35 +130,31 @@ based on the task descriptions and explain your reasoning.
 
 ## Phase 3 — Execution
 
-### 3a. Create all brief files
+### 3a. Create brief files
 
 Every A item becomes a purpose-built agent created fresh for this specific task.
 Never route to existing plugins unless the user explicitly names one (e.g.
 `A adops-suite Creative Director`). Otherwise, build from scratch.
 
-**Create all A agent briefs first**, before building O or dispatching anything. Each
-brief is fully self-contained — the agent has no prior context and operates only from
-this file.
+#### If O is present: build the Orchestrator brief FIRST
 
-#### If O is present: build the Orchestrator brief after all A briefs exist
-
-O gets its own brief (`[o-slug]-brief.md`) that contains the full context of the run
-PLUS all A agent briefs as appendices. O is the team lead — it does not execute
-research or creative tasks, it manages who does what and validates the outputs.
+O gets its own brief (`[o-slug]-brief.md`) built directly from the note context —
+before any A agent briefs exist. O receives the note ingredients and builds each
+agent's brief itself before dispatching them.
 
 See `agents/dispatcher.md` for the O brief template.
 
 **With O present, the execution flow becomes:**
-1. Create all A briefs
-2. Create O brief (with all A briefs embedded as appendices)
-3. Run O → O produces `orchestrator-dispatch.md` (ordered agent list + rationale +
-   review criteria for each agent)
-4. Execute A agents in the order O specifies
-5. After each A completes, run O's review step: O reads the output, decides if it
+1. Create O brief from note context (G, C, D, T, A list with B attachments, W positions,
+   R/K/I, F/E/M/V)
+2. Run O → O creates `[agent-slug]-brief.md` for each A item, then produces
+   `orchestrator-dispatch.md` (ordered agent list + review criteria)
+3. Execute A agents in the order O specifies
+4. After each A completes, run O's review step: O reads the output, decides if it
    meets the bar, flags issues or approves
-6. O synthesises all approved outputs at the end
+5. O synthesises all approved outputs at the end
 
-If O is absent, Claude manages dispatch directly using note order.
+If O is absent, Claude builds A briefs directly and manages dispatch using note order.
 
 For each A item, create `[agent-slug]-brief.md`. Each brief is fully self-contained:
 
@@ -237,15 +233,15 @@ the note.** Everything listed before the W runs first. At the W checkpoint:
 **With O — orchestrator-managed dispatch:**
 
 1. Pre-run: fetch R URLs via Diya, query K from KB
-2. Build all A briefs, then build O brief
-3. Run O → read `orchestrator-dispatch.md` for the ordered agent sequence
+2. Build O brief from note context (G, C, D, T, A list, W positions, R/K/I, F/E/M/V)
+3. Run O → O creates agent briefs and produces `orchestrator-dispatch.md`
 4. Execute each A agent per O's plan
 5. After each A completes: run O's review step
    - O reads the output against its declared review criteria
    - O approves (proceed) or flags issues (report to user before continuing)
-6. W checkpoints still apply at their note positions — O surfaces the checkpoint
+6. W checkpoints apply at their positional note location — O surfaces the checkpoint
    summary to the user
-7. Unassigned T items: O handles synthesis
+7. O owns synthesis
 8. V validation, then F / E / M
 
 ### 3c. Agent output files
